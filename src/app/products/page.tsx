@@ -1,5 +1,10 @@
 
 import { mockProducts } from "./mock-products";
+import { filterProducts } from "../lib/products/filter-products";
+
+
+
+
 
 interface ProductsPageProps {
   searchParams: Promise<{
@@ -33,7 +38,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const page = isValidPage ? rawPage : 1;
 
     // FILTER PRODUCTS : based on search title
-    const searchedProducts = mockProducts.filter((product)=>product.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()));
+  const searchedProducts = filterProducts(mockProducts,search);
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
