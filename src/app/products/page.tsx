@@ -42,6 +42,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   const searchedProducts = filterProducts(mockProducts,search);
   const paginatedProducts = paginateProducts(searchedProducts, page);
 
+    // navigation btn activation conditions
+    // we check next page if it has any elements
+    const hasNext  = paginateProducts(searchedProducts,page + 1).length > 0;
+    // we check if we are on page 1 (it has not previous page)
+    const hasPrev = page > 1;
+
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Products</h1>
@@ -61,6 +67,36 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
           </article>
         ))}
       </section>
+
+      <nav className="flex justify-center items-center gap-4 mt-10">
+        {hasPrev ? (
+          <a
+            href={`/products?page=${page - 1}${search ? `&search=${search}` : ""}`}
+            className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-neutral-100"
+          >
+            ← Previous
+          </a>
+        ) : (
+          <span className="px-4 py-2 border rounded-md text-sm font-medium text-neutral-300 cursor-not-allowed">
+            ← Previous
+          </span>
+        )}
+
+        <span className="text-sm text-neutral-600">Page {page}</span>
+
+        {hasNext ? (
+          <a
+            href={`/products?page=${page + 1}${search ? `&search=${search}` : ""}`}
+            className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-neutral-100"
+          >
+            Next →
+          </a>
+        ) : (
+          <span className="px-4 py-2 border rounded-md text-sm font-medium text-neutral-300 cursor-not-allowed">
+            Next →
+          </span>
+        )}
+      </nav>
     </main>
   );
 }
