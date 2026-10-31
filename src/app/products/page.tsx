@@ -2,6 +2,7 @@
 import { mockProducts } from "./mock-products";
 import { filterProducts } from "../lib/products/filter-products";
 import { paginateProducts } from "../lib/products/paginate-products";
+import { SearchForm } from "@/components/search-form";
 
 
 
@@ -52,6 +53,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     <main className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Products</h1>
 
+      <SearchForm defaultValue={search} />
+
+      {/* if not products match show empty state otherwise the products */}
       {paginatedProducts.length === 0 ? (
         <section className="text-center py-16">
           <h2 className="text-xl font-semibold text-neutral-900">No products found</h2>
