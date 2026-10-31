@@ -1,6 +1,7 @@
 
 import { mockProducts } from "./mock-products";
 import { filterProducts } from "../lib/products/filter-products";
+import { paginateProducts } from "../lib/products/paginate-products";
 
 
 
@@ -39,13 +40,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
     // FILTER PRODUCTS : based on search title
   const searchedProducts = filterProducts(mockProducts,search);
+  const paginatedProducts = paginateProducts(searchedProducts, page);
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold tracking-tight mb-8">Products</h1>
 
       <section className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {searchedProducts.map((product) => (
+        {paginatedProducts.map((product) => (
           <article
             key={product.id}
             className="border rounded-lg p-4 flex flex-col justify-between"
