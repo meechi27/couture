@@ -7,5 +7,5 @@ export function paginateProducts(products:Product[],page:number):Product[]{
     const offset = (page - 1) * limit;
     
 
-    return products.slice(offset ,offset + limit);
+    return products.slice(offset ,offset + limit );
 }
