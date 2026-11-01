@@ -1,4 +1,5 @@
 
+import Link from "next/link";
 import { mockProducts } from "./mock-products";
 import { filterProducts } from "../lib/products/filter-products";
 import { paginateProducts } from "../lib/products/paginate-products";
@@ -74,7 +75,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
                   <h2 className="font-semibold text-lg">{product.name}</h2>
                   <p className="text-sm text-neutral-500">{product.category}</p>
                 </div>
-                <p className="mt-4 font-medium text-neutral-900">${product.price}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="font-medium text-neutral-900">${product.price}</p>
+                  <Link
+                    href={`/products/${product.id}`}
+                    className="inline-flex items-center justify-center rounded-md bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950"
+                  >
+                    View Details
+                  </Link>
+                </div>
               </article>
             ))}
           </section>
