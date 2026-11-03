@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { mockProducts } from "../mock-products";
 import { notFound } from "next/navigation";
+import { PhoneInput } from "@/components/phone-input";
 
 interface ProductDetailsProps {
     params: Promise<{ id: string }>;
@@ -82,26 +83,29 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                             <label htmlFor="phone" className="text-sm font-medium text-neutral-700">
                                 Phone Number
                             </label>
-                            <input
-                                id="phone"
-                                name="phone"
-                                type="tel"
-                                placeholder="e.g. +212 600 000 000"
-                                className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                            />
+                            <PhoneInput id="phone" name="phone" />
                         </div>
 
-                        <div className="flex flex-col gap-1.5">
-                            <label htmlFor="size" className="text-sm font-medium text-neutral-700">
+                        <div className="flex flex-col gap-2">
+                            <span className="text-sm font-medium text-neutral-700">
                                 Size
-                            </label>
-                            <input
-                                id="size"
-                                name="size"
-                                type="text"
-                                placeholder="e.g. S, M, L, XL or custom"
-                                className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                            />
+                            </span>
+                            <div className="flex flex-wrap gap-2">
+                                {["XS", "S", "M", "L", "XL", "XXL", "XXXL"].map((size, index) => (
+                                    <label key={size} className="cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="size"
+                                            value={size}
+                                            defaultChecked={index === 1}
+                                            className="peer sr-only"
+                                        />
+                                        <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-neutral-300 px-3 text-xs font-medium text-neutral-800 transition-colors hover:bg-neutral-100 peer-checked:border-neutral-900 peer-checked:bg-neutral-900 peer-checked:text-white">
+                                            {size}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
