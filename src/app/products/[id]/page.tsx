@@ -68,36 +68,42 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                     <form className="flex flex-col gap-5">
                         <div className="flex flex-col gap-1.5">
                             <label htmlFor="customerName" className="text-sm font-medium text-neutral-700">
-                                Customer Name
+                                Customer Name <span className="text-red-500">*</span>
                             </label>
                             <input
                                 id="customerName"
                                 name="customerName"
                                 type="text"
+                                required
+                                minLength={2}
+                                maxLength={70}
                                 placeholder="Enter your full name"
                                 className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
                             />
+                            {/* Example placeholder error for UI presentation */}
+                            <p className="text-xs text-red-500 hidden">Please enter a valid name (2-70 characters).</p>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
                             <label htmlFor="phone" className="text-sm font-medium text-neutral-700">
-                                Phone Number
+                                Phone Number <span className="text-red-500">*</span>
                             </label>
                             <PhoneInput id="phone" name="phone" />
+                            <p className="text-xs text-red-500 hidden">Please enter a valid phone number (9-10 digits).</p>
                         </div>
 
                         <div className="flex flex-col gap-2">
                             <span className="text-sm font-medium text-neutral-700">
-                                Size
+                                Size <span className="text-red-500">*</span>
                             </span>
                             <div className="flex flex-wrap gap-2">
-                                {["XS", "S", "M", "L", "XL", "XXL", "XXXL"].map((size, index) => (
+                                {["XS", "S", "M", "L", "XL", "XXL", "XXXL"].map((size) => (
                                     <label key={size} className="cursor-pointer">
                                         <input
                                             type="radio"
                                             name="size"
                                             value={size}
-                                            defaultChecked={index === 1}
+                                            required
                                             className="peer sr-only"
                                         />
                                         <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-neutral-300 px-3 text-xs font-medium text-neutral-800 transition-colors hover:bg-neutral-100 peer-checked:border-neutral-900 peer-checked:bg-neutral-900 peer-checked:text-white">
@@ -106,6 +112,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                                     </label>
                                 ))}
                             </div>
+                            <p className="text-xs text-red-500 hidden">Please select a size.</p>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
@@ -116,9 +123,11 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                                 id="measurements"
                                 name="measurements"
                                 rows={3}
+                                maxLength={500}
                                 placeholder="Bust, waist, hips, length, fabric preferences…"
                                 className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none"
                             />
+                            <p className="text-xs text-red-500 hidden">Measurements cannot exceed 500 characters.</p>
                         </div>
 
                         <div className="flex flex-col gap-1.5">
@@ -129,9 +138,11 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                                 id="notes"
                                 name="notes"
                                 rows={2}
+                                maxLength={300}
                                 placeholder="Anything else we should know…"
                                 className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none"
                             />
+                            <p className="text-xs text-red-500 hidden">Notes cannot exceed 300 characters.</p>
                         </div>
 
                         <button
