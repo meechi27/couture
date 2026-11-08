@@ -2,6 +2,7 @@ import Link from "next/link";
 import { mockProducts } from "../mock-products";
 import { notFound } from "next/navigation";
 import { PhoneInput } from "@/components/phone-input";
+import { SubmitDemandButton } from "@/components/submit-demand-button";
 
 interface ProductDetailsProps {
     params: Promise<{ id: string }>;
@@ -77,6 +78,8 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                                 required
                                 minLength={2}
                                 maxLength={70}
+                                pattern=".*\S+.*"
+                                title="Name cannot be empty or only spaces."
                                 placeholder="Enter your full name"
                                 className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
                             />
@@ -145,12 +148,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                             <p className="text-xs text-red-500 hidden">Notes cannot exceed 300 characters.</p>
                         </div>
 
-                        <button
-                            type="submit"
-                            className="mt-2 w-full rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950"
-                        >
-                            Submit Demand
-                        </button>
+                        <SubmitDemandButton />
                     </form>
                 </div>
             </div>
