@@ -20,6 +20,21 @@ export interface DemandFormErrors {
 export function DemandForm({ productId }: DemandFormProps) {
     const [errors, setErrors] = useState<DemandFormErrors>({});
 
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setErrors({});
+
+        const formData = new FormData(e.currentTarget);
+        const rawData = {
+            productId: formData.get("productId"),
+            customerName: formData.get("customerName"),
+            phone: formData.get("phone"),
+            size: formData.get("size"),
+            measurements: formData.get("measurements"),
+            notes: formData.get("notes"),
+        };
+    };
+
     return (
         <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8">
             <h2 className="text-xl font-bold tracking-tight text-neutral-900 mb-6">
@@ -32,7 +47,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                 </div>
             )}
 
-            <form className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
                 <input type="hidden" name="productId" value={productId} />
 
                 {/* Customer Name */}
