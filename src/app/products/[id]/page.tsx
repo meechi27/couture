@@ -67,6 +67,8 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                     </h2>
 
                     <form className="flex flex-col gap-5">
+                        <input type="hidden" name="productId" value={product.id} />
+
                         <div className="flex flex-col gap-1.5">
                             <label htmlFor="customerName" className="text-sm font-medium text-neutral-700">
                                 Customer Name <span className="text-red-500">*</span>
