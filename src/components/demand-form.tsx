@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PhoneInput } from "@/components/phone-input";
 import { SubmitDemandButton } from "@/components/submit-demand-button";
+import { demandSchema } from "@/app/lib/validations/demand-schema";
 
 interface DemandFormProps {
     productId: string;
@@ -33,6 +34,23 @@ export function DemandForm({ productId }: DemandFormProps) {
             measurements: formData.get("measurements"),
             notes: formData.get("notes"),
         };
+
+        const result = demandSchema.safeParse(rawData);
+
+        if (!result.success) {
+            const fieldErrors: DemandFormErrors = {};
+            for (const issue of result.error.issues) {
+                const fieldName = issue.path[0] as keyof DemandFormErrors;
+                if (fieldName && !fieldErrors[fieldName]) {
+                    fieldErrors[fieldName] = issue.message;
+                }
+            }
+            setErrors(fieldErrors);
+            return;
+        }
+
+        // Data is valid! result.data holds the clean, typed values.
+        console.log("Valid Demand Data:", result.data);
     };
 
     return (
@@ -47,7 +65,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
                 <input type="hidden" name="productId" value={productId} />
 
                 {/* Customer Name */}
@@ -74,7 +92,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                     <label htmlFor="phone" className="text-sm font-medium text-neutral-700">
                         Phone Number <span className="text-red-500">*</span>
                     </label>
-                    <PhoneInput id="phone" name="phone" />
+                    <PhoneInput id="phone" name="phone" hasError={Boolean(errors.phone)} />
                     {errors.phone && (
                         <p className="text-xs text-red-500">{errors.phone}</p>
                     )}
