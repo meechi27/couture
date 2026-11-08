@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { mockProducts } from "../mock-products";
 import { notFound } from "next/navigation";
-import { PhoneInput } from "@/components/phone-input";
-import { SubmitDemandButton } from "@/components/submit-demand-button";
+import { DemandForm } from "@/components/demand-form";
 
 interface ProductDetailsProps {
     params: Promise<{ id: string }>;
@@ -61,98 +60,7 @@ export default async function ProductDetails({ params }: ProductDetailsProps) {
                 </div>
 
                 {/* Customer Demand Form */}
-                <div className="rounded-xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-8">
-                    <h2 className="text-xl font-bold tracking-tight text-neutral-900 mb-6">
-                        Submit a Demand
-                    </h2>
-
-                    <form className="flex flex-col gap-5">
-                        <input type="hidden" name="productId" value={product.id} />
-
-                        <div className="flex flex-col gap-1.5">
-                            <label htmlFor="customerName" className="text-sm font-medium text-neutral-700">
-                                Customer Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                id="customerName"
-                                name="customerName"
-                                type="text"
-                                required
-                                minLength={2}
-                                maxLength={70}
-                                pattern=".*\S+.*"
-                                title="Name cannot be empty or only spaces."
-                                placeholder="Enter your full name"
-                                className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent"
-                            />
-                            {/* Example placeholder error for UI presentation */}
-                            <p className="text-xs text-red-500 hidden">Please enter a valid name (2-70 characters).</p>
-                        </div>
-
-                        <div className="flex flex-col gap-1.5">
-                            <label htmlFor="phone" className="text-sm font-medium text-neutral-700">
-                                Phone Number <span className="text-red-500">*</span>
-                            </label>
-                            <PhoneInput id="phone" name="phone" />
-                            <p className="text-xs text-red-500 hidden">Please enter a valid phone number (9-10 digits).</p>
-                        </div>
-
-                        <div className="flex flex-col gap-2">
-                            <span className="text-sm font-medium text-neutral-700">
-                                Size <span className="text-red-500">*</span>
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                                {["XS", "S", "M", "L", "XL", "XXL", "XXXL"].map((size) => (
-                                    <label key={size} className="cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="size"
-                                            value={size}
-                                            required
-                                            className="peer sr-only"
-                                        />
-                                        <span className="inline-flex h-9 min-w-9 items-center justify-center rounded-md border border-neutral-300 px-3 text-xs font-medium text-neutral-800 transition-colors hover:bg-neutral-100 peer-checked:border-neutral-900 peer-checked:bg-neutral-900 peer-checked:text-white">
-                                            {size}
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                            <p className="text-xs text-red-500 hidden">Please select a size.</p>
-                        </div>
-
-                        <div className="flex flex-col gap-1.5">
-                            <label htmlFor="measurements" className="text-sm font-medium text-neutral-700">
-                                Measurements / Customization Details
-                            </label>
-                            <textarea
-                                id="measurements"
-                                name="measurements"
-                                rows={3}
-                                maxLength={500}
-                                placeholder="Bust, waist, hips, length, fabric preferences…"
-                                className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none"
-                            />
-                            <p className="text-xs text-red-500 hidden">Measurements cannot exceed 500 characters.</p>
-                        </div>
-
-                        <div className="flex flex-col gap-1.5">
-                            <label htmlFor="notes" className="text-sm font-medium text-neutral-700">
-                                Additional Notes
-                            </label>
-                            <textarea
-                                id="notes"
-                                name="notes"
-                                rows={2}
-                                maxLength={300}
-                                placeholder="Anything else we should know…"
-                                className="rounded-md border border-neutral-300 px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none"
-                            />
-                            <p className="text-xs text-red-500 hidden">Notes cannot exceed 300 characters.</p>
-                        </div>
-
-                        <SubmitDemandButton />
-                    </form>
-                </div>
+                <DemandForm productId={product.id} />
             </div>
         </main>
     );
