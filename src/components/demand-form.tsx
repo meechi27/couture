@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PhoneInput } from "@/components/phone-input";
 import { SubmitDemandButton } from "@/components/submit-demand-button";
 import { demandSchema } from "@/app/lib/validations/demand-schema";
+import { submitDemand } from "@/app/actions/demand";
 
 interface DemandFormProps {
     productId: string;
@@ -21,7 +22,7 @@ export interface DemandFormErrors {
 export function DemandForm({ productId }: DemandFormProps) {
     const [errors, setErrors] = useState<DemandFormErrors>({});
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault();
         setErrors({});
 
@@ -49,7 +50,8 @@ export function DemandForm({ productId }: DemandFormProps) {
             return;
         }
 
-        // Data is valid! result.data holds the clean, typed values.
+        
+        await submitDemand(formData);
         console.log("Valid Demand Data:", result.data);
     };
 
