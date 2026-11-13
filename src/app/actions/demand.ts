@@ -1,11 +1,14 @@
 "use server"
+import { DemandFormErrors } from "@/components/demand-form";
 import { demandSchema } from "../lib/validations/demand-schema";
 
+type DemandActionResult =
+    | { success: true; message: string }
+    | { success: false; errors: DemandFormErrors };
 
 
 
-
-export async function submitDemand(formData: FormData) {
+export async function submitDemand(formData: FormData): Promise<DemandActionResult> {
 
 
     const rawData = {
@@ -21,7 +24,7 @@ export async function submitDemand(formData: FormData) {
 
 
     if (!result.success) {
-        console.log(result.error.flatten().fieldErrors)
+        
         const fieldErrors = result.error.flatten().fieldErrors
 
         return {

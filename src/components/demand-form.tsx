@@ -29,6 +29,9 @@ export function DemandForm({ productId }: DemandFormProps) {
         const formData = new FormData(e.currentTarget);
         
         let response = await submitDemand(formData);
+        if(!response.success){
+            setErrors(response.errors);
+        }
         console.log(response)
 
     };
