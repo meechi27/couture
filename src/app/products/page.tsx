@@ -4,7 +4,7 @@ import { mockProducts } from "./mock-products";
 import { filterProducts } from "../lib/products/filter-products";
 import { paginateProducts } from "../lib/products/paginate-products";
 import { SearchForm } from "@/components/search-form";
-
+import { submitDemand } from "../actions/demand";
 
 
 
@@ -52,6 +52,7 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
+      
       <h1 className="text-3xl font-bold tracking-tight mb-8">Products</h1>
 
       <SearchForm defaultValue={search} />

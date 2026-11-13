@@ -27,32 +27,10 @@ export function DemandForm({ productId }: DemandFormProps) {
         setErrors({});
 
         const formData = new FormData(e.currentTarget);
-        const rawData = {
-            productId: formData.get("productId"),
-            customerName: formData.get("customerName"),
-            phone: formData.get("phone"),
-            size: formData.get("size"),
-            measurements: formData.get("measurements"),
-            notes: formData.get("notes"),
-        };
-
-        const result = demandSchema.safeParse(rawData);
-
-        if (!result.success) {
-            const fieldErrors: DemandFormErrors = {};
-            for (const issue of result.error.issues) {
-                const fieldName = issue.path[0] as keyof DemandFormErrors;
-                if (fieldName && !fieldErrors[fieldName]) {
-                    fieldErrors[fieldName] = issue.message;
-                }
-            }
-            setErrors(fieldErrors);
-            return;
-        }
-
         
-        await submitDemand(formData);
-        console.log("Valid Demand Data:", result.data);
+        let response = await submitDemand(formData);
+        console.log(response)
+
     };
 
     return (
@@ -134,7 +112,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                         id="measurements"
                         name="measurements"
                         rows={3}
-                        maxLength={500}
+                        maxLength={300}
                         placeholder="Bust, waist, hips, length, fabric preferences…"
                         className={`rounded-md border px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none ${
                             errors.measurements ? "border-red-500" : "border-neutral-300"
@@ -154,7 +132,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                         id="notes"
                         name="notes"
                         rows={2}
-                        maxLength={300}
+                        maxLength={150}
                         placeholder="Anything else we should know…"
                         className={`rounded-md border px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none ${
                             errors.notes ? "border-red-500" : "border-neutral-300"
