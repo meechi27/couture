@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { PhoneInput } from "@/components/phone-input";
 import { SubmitDemandButton } from "@/components/submit-demand-button";
-import { demandSchema } from "@/app/lib/validations/demand-schema";
 import { submitDemand } from "@/app/actions/demand";
 
 interface DemandFormProps {
@@ -21,19 +20,23 @@ export interface DemandFormErrors {
 
 export function DemandForm({ productId }: DemandFormProps) {
     const [errors, setErrors] = useState<DemandFormErrors>({});
+    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>){
+        setSuccessMessage(null);
         e.preventDefault();
         setErrors({});
 
-        const formData = new FormData(e.currentTarget);
+        const form = e.currentTarget;
+        const formData = new FormData(form);
         
-        let response = await submitDemand(formData);
+        const response = await submitDemand(formData);
         if(!response.success){
             setErrors(response.errors);
+        } else {
+            setSuccessMessage(response.message);
+            form.reset();
         }
-        console.log(response)
-
     };
 
     return (
@@ -148,6 +151,37 @@ export function DemandForm({ productId }: DemandFormProps) {
 
                 <SubmitDemandButton />
             </form>
+
+            {/* Success Modal / Popup */}
+            {successMessage && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-in fade-in duration-200">
+                    <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-xl text-center flex flex-col items-center">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 mb-4">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth={2}
+                            >
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+
+                        <h3 className="text-lg font-semibold text-neutral-900 mb-2">Success!</h3>
+                        <p className="text-sm text-neutral-600 mb-6">{successMessage}</p>
+
+                        <button
+                            type="button"
+                            onClick={() => setSuccessMessage(null)}
+                            className="w-full rounded-md bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-950"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

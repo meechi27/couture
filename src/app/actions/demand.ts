@@ -40,7 +40,7 @@ export async function submitDemand(formData: FormData): Promise<DemandActionResu
     }
     return {
         success: true,
-        message: "Demand submitted successfully.",
+        message: "Your demand information passed validation.",
     };
 
 
