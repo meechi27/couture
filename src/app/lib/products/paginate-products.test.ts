@@ -3,25 +3,25 @@ import { paginateProducts } from "./paginate-products";
 import { mockProducts } from "@/app/products/mock-products";
 
 describe("paginateProducts", () => {
-  it("returns the first 12 products on page 1", () => {
+  it("returns the first 8 products on page 1", () => {
     const result = paginateProducts(mockProducts, 1);
 
-    expect(result).toHaveLength(12);
+    expect(result).toHaveLength(8);
     expect(result[0].id).toBe("1");
-    expect(result[11].id).toBe("12");
+    expect(result[7].id).toBe("8");
   });
 
-  it("returns products 13 to 24 on page 2", () => {
+  it("returns products 9 to 16 on page 2", () => {
     const result = paginateProducts(mockProducts, 2);
 
-    expect(result).toHaveLength(12);
-    expect(result[0].id).toBe("13");
-    expect(result[11].id).toBe("24");
+    expect(result).toHaveLength(8);
+    expect(result[0].id).toBe("9");
+    expect(result[7].id).toBe("16");
   });
 
   it("returns the remaining products on the last page", () => {
-    // 100 products with 12 per page: pages 1-8 have 12 (96 total), page 9 has remaining 4
-    const result = paginateProducts(mockProducts, 9);
+    // 100 products with 8 per page: pages 1-12 have 8 (96 total), page 13 has remaining 4
+    const result = paginateProducts(mockProducts, 13);
 
     expect(result).toHaveLength(4);
     expect(result[0].id).toBe("97");
@@ -29,13 +29,13 @@ describe("paginateProducts", () => {
   });
 
   it("returns an empty array when the page has no products", () => {
-    // Beyond the last page (page 10 has no items)
-    const result = paginateProducts(mockProducts, 10);
+    // Beyond the last page (page 14 has no items)
+    const result = paginateProducts(mockProducts, 14);
 
     expect(result).toEqual([]);
   });
 
-  it("returns all products when there are fewer than 12", () => {
+  it("returns all products when there are fewer than 8", () => {
     const fewProducts = mockProducts.slice(0, 5);
 
     const result = paginateProducts(fewProducts, 1);
