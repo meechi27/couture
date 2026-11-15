@@ -224,7 +224,7 @@ onSubmit → preventDefault
   - writes `response.errors` into state (field-level messages under each input), or
   - shows a **success modal** and calls `form.reset()` (clearing all fields, including the radio selection).
 - Form is `noValidate` — **browser validation is deliberately disabled**; the server action is the single source of truth (this is the theme of recent commits: "server action only source of validation").
-- Fields: hidden `productId`; `customerName` (text); `phone` (`PhoneInput`); `size` (7 radio chips `XS…XXXL`, styled with `peer-checked`); `measurements` (textarea, `maxLength={300}`, 3 rows); `notes` (textarea, `maxLength={150}`, 2 rows).
+- Fields: hidden `productId`; `customerName` (text, `maxLength={50}`); `phone` (`PhoneInput`); `size` (7 radio chips `XS…XXXL`, styled with `peer-checked`); `measurements` (textarea, `maxLength={100}`, 3 rows); `notes` (textarea, `maxLength={100}`, 2 rows).
 - Error UI: red border + `<p className="text-xs text-red-500">` per field; an extra `errors.form` slot renders a banner (currently never populated by the action).
 - Success UI: fixed full-screen overlay (`bg-black/50`), white card, green check icon, message, and a **Close** button that dismisses the modal. Uses `animate-in fade-in duration-200` classes, which are **not defined** (that utility comes from the `tailwindcss-animate` plugin, which is not installed), so no animation occurs.
 - `DemandFormErrors` (exported interface) is imported by the server action file for its return type.
@@ -241,7 +241,7 @@ onSubmit → preventDefault
 | Field | Rules |
 |---|---|
 | `productId` | string, trimmed, min 1 ("Product ID cannot be empty.") |
-| `customerName` | string, trimmed, 2–20 chars |
+| `customerName` | string, trimmed, 2–50 chars |
 | `phone` | string, trimmed → **transform strips all non-digits** (note: `trim()` runs before `.transform()`), then must match `^(0[0-9]{9}\|[1-9][0-9]{8})$` → 10 digits starting with `0`, or 9 digits starting with 1–9 (Algerian numbering) |
 | `size` | enum of `DEMAND_SIZES` = `XS, S, M, L, XL, XXL, XXXL` |
 | `measurements` | optional string, trimmed, **max 100** chars, or `""` |
@@ -329,7 +329,7 @@ So the "Submit a Demand" feature is **validation-only**: a user gets a green suc
 1. **Write path** — `src/app/actions/demand.ts`, after `result.success`, replace the `return { success: true, … }` with an insert. The action already returns a discriminated union, so failure handling can stay field-shaped (`errors.form` is already reserved for a form-level message such as "Could not save your demand").
 2. **Read path** — `src/app/products/page.tsx` and `[id]/page.tsx` currently read `mockProducts` directly; a repository function (e.g. `getProducts({ search, page })`, `getProductById(id)`) would slot in without touching the components.
 3. **Server-side pagination** — `paginateProducts` currently slices in memory; with a DB it becomes `LIMIT/OFFSET` (and `hasNext` becomes a count query).
-4. **Validation** — `demandSchema` is already the contract; a DB schema would mirror it (`customer_name varchar(20)`, `phone varchar(10)`, `size enum`, `measurements varchar(100)`, `notes varchar(100)`, `product_id` FK).
+4. **Validation** — `demandSchema` is already the contract; a DB schema would mirror it (`customer_name varchar(50)`, `phone varchar(10)`, `size enum`, `measurements varchar(100)`, `notes varchar(100)`, `product_id` FK).
 5. **Product existence check** — the action validates `productId` as a non-empty string but never verifies the product exists (`mockProducts` is not consulted), so any arbitrary id passes.
 
 ---
@@ -353,15 +353,15 @@ Reproduced on a clean, unmodified tree. It is Next's auto-generated `_global-err
 
 `paginate-products.ts` uses `limit = 8`; `paginate-products.test.ts` asserted 12 per page (ids `1–12`, `13–24`, `97–100` on page 9, empty on page 10). The suite now matches the implementation: 8 per page, 13 pages total, page 13 holds ids `97–100`, page 14 is empty. All 12 tests pass. Recommendation: export the page size as a constant (e.g. `export const PAGE_SIZE = 8`) so tests and UI copy can reference the same value instead of hardcoding it.
 
-### 6.3 UI limits differ from schema limits
+### 6.3 UI limits now match the schema (resolved)
 
 | Field | Schema | UI |
 |---|---|---|
-| `customerName` | max **20** | no `maxLength` (server rejects with a message) |
-| `measurements` | max **100** | `maxLength={300}` |
-| `notes` | max **100** | `maxLength={150}` |
+| `customerName` | max **50** | `maxLength={50}` |
+| `measurements` | max **100** | `maxLength={100}` |
+| `notes` | max **100** | `maxLength={100}` |
 
-A user can type 300 characters into measurements, get a red "cannot exceed 100 characters" error, and have no indication until submit. HTML `maxLength` should mirror the schema (or the schema should be raised).
+All three fields now cap typing/pasting at the server limit, so the Zod "cannot exceed N characters" messages are no longer reachable through normal input. The server action remains the source of truth (HTML limits can be bypassed by crafted requests). The name cap was raised from 20 to 50 (schema message and input attribute together) so real full names such as "Abdelkader Benmohamed" fit.
 
 ### 6.4 `useFormStatus` cannot work with the current submit pattern
 
@@ -426,7 +426,7 @@ Manual smoke paths:
 
 1. Fix or work around the `_global-error` build failure (add `src/app/global-error.tsx`, then try a Next patch upgrade).
 2. Reconcile the page size: update `paginate-products.test.ts` to 8, or set `PAGE_SIZE = 12` in `paginate-products.ts` and export the constant.
-3. Align HTML `maxLength` values with `demandSchema` (`customerName` 20, `measurements` 100, `notes` 100).
+3. ~~Align HTML `maxLength` values with `demandSchema`~~ — done (`customerName` 50, `measurements` 100, `notes` 100).
 4. Add a real persistence layer (e.g. SQLite + Drizzle or Postgres + Prisma) and write the validated demand in `submitDemand`, plus a product-existence check and an admin/inbox route.
 5. Make the demand form progressively enhanced (`<form action={…}>` + `useActionState`) so pending state and no-JS submission work.
 6. Use `next/link` + `URLSearchParams` for search/pagination; extend filtering to category.

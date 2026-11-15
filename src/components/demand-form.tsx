@@ -63,6 +63,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                         id="customerName"
                         name="customerName"
                         type="text"
+                        maxLength={50}
                         placeholder="Enter your full name"
                         className={`rounded-md border px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent ${
                             errors.customerName ? "border-red-500" : "border-neutral-300"
@@ -118,7 +119,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                         id="measurements"
                         name="measurements"
                         rows={3}
-                        maxLength={300}
+                        maxLength={100}
                         placeholder="Bust, waist, hips, length, fabric preferences…"
                         className={`rounded-md border px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none ${
                             errors.measurements ? "border-red-500" : "border-neutral-300"
@@ -138,7 +139,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                         id="notes"
                         name="notes"
                         rows={2}
-                        maxLength={150}
+                        maxLength={100}
                         placeholder="Anything else we should know…"
                         className={`rounded-md border px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent resize-none ${
                             errors.notes ? "border-red-500" : "border-neutral-300"

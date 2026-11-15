@@ -20,7 +20,7 @@ export const demandSchema = z.object({
     .string({ message: "Customer name is required." })
     .trim()
     .min(2, "Name must be at least 2 characters long.")
-    .max(20, "Name cannot exceed 20 characters."),
+    .max(50, "Name cannot exceed 50 characters."),
 
   phone: z
     .string({ message: "Phone number is required." })
