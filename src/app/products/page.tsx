@@ -3,8 +3,8 @@ import Link from "next/link";
 import { mockProducts } from "./mock-products";
 import { filterProducts } from "../lib/products/filter-products";
 import { paginateProducts } from "../lib/products/paginate-products";
+import { buildProductsHref } from "../lib/products/build-products-href";
 import { SearchForm } from "@/components/search-form";
-import { submitDemand } from "../actions/demand";
 
 
 
@@ -91,12 +91,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
           <nav className="flex justify-center items-center gap-4 mt-10">
         {hasPrev ? (
-          <a
-            href={`/products?page=${page - 1}${search ? `&search=${search}` : ""}`}
+          <Link
+            href={buildProductsHref(page - 1, search)}
             className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-neutral-100"
           >
             ← Previous
-          </a>
+          </Link>
         ) : (
           <span className="px-4 py-2 border rounded-md text-sm font-medium text-neutral-300 cursor-not-allowed">
             ← Previous
@@ -106,12 +106,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         <span className="text-sm text-neutral-600">Page {page}</span>
 
         {hasNext ? (
-          <a
-            href={`/products?page=${page + 1}${search ? `&search=${search}` : ""}`}
+          <Link
+            href={buildProductsHref(page + 1, search)}
             className="px-4 py-2 border rounded-md text-sm font-medium hover:bg-neutral-100"
           >
             Next →
-          </a>
+          </Link>
         ) : (
           <span className="px-4 py-2 border rounded-md text-sm font-medium text-neutral-300 cursor-not-allowed">
             Next →
