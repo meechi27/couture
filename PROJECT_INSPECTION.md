@@ -17,7 +17,7 @@ There is **no database, no ORM, no API routes, no auth and no persistence** — 
 
 | Layer | Technology | Version |
 |---|---|---|
-| Framework | Next.js (App Router, Turbopack) | `16.4.3` |
+| Framework | Next.js (App Router, Turbopack) | `16.4.6` |
 | UI runtime | React / React DOM | `19.3.0` |
 | Language | TypeScript (strict) | `5.9.3` |
 | Styling | Tailwind CSS v4 + `@tailwindcss/turbopack` | `4.3.3` |
@@ -47,7 +47,9 @@ couture/
 │   │   │   │   ├── filter-products.ts        # pure search helper
 │   │   │   │   ├── filter-products.test.ts   # 6 tests
 │   │   │   │   ├── paginate-products.ts      # pure pagination helper (PAGE_SIZE = 8)
-│   │   │   │   └── paginate-products.test.ts # 6 tests
+│   │   │   │   ├── paginate-products.test.ts # 6 tests
+│   │   │   │   ├── build-products-href.ts    # encodes ?page & ?search into a URL
+│   │   │   │   └── build-products-href.test.ts # 6 tests (incl. injection cases)
 │   │   │   └── validations/
 │   │   │       └── demand-schema.ts          # Zod schema + DEMAND_SIZES + DemandInput type
 │   │   ├── products/
@@ -94,7 +96,7 @@ couture/
     "test": "vitest"
   },
   "dependencies": {
-    "next": "16.4.3",
+    "next": "16.4.6",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "zod": "^4.6.7"
@@ -117,7 +119,7 @@ couture/
 
 | Package | Installed | Role |
 |---|---|---|
-| `next` | 16.4.3 | Framework, App Router, Server Actions, Turbopack build |
+| `next` | 16.4.6 | Framework, App Router, Server Actions, Turbopack build (security patch from 16.4.3) |
 | `react` | 19.3.0 | UI runtime (deduped, single copy) |
 | `react-dom` | 19.3.0 | DOM renderer + `useFormStatus` |
 | `zod` | 4.6.7 | Schema validation for the demand form |
@@ -141,6 +143,7 @@ Notes:
 | File | Setting | Effect |
 |---|---|---|
 | `next.config.ts` | `cacheComponents: true` | Enables Next 16 Cache Components (`use cache`, static shells). App doesn't use `use cache` yet. |
+| | `experimental.agentUpgrade: "security"` | Pins the `next upgrade --agent` policy used for reminders and future agent upgrades. |
 | | `partialPrefetching: true` | `<Link>` prefetches one shared "App Shell" per route instead of per-link payloads. |
 | | `turbopack.rules["*.css"]` | Routes CSS through `@tailwindcss/turbopack`. |
 | `tsconfig.json` | `strict: true`, `paths: { "@/*": ["./src/*"] }` | Strict TS + `@/` alias used everywhere. |
@@ -175,7 +178,7 @@ Async **Server Component** that receives `searchParams` as a `Promise` (Next 16 
 5. **Paginates** the filtered list, **8 per page** (`paginateProducts`).
 6. Computes `hasNext` by probing page `page + 1` and `hasPrev` from `page > 1`.
 7. Renders a responsive grid (`grid-cols-2 / md:3 / lg:4`) of cards (placeholder square, name, category, price, "View Details" link) or an empty state ("No products found / Try a different search term.").
-8. Renders Previous/Next controls as plain `<a href>` links carrying `?page=` and the current `&search=`.
+8. Renders Previous/Next controls as `next/link` `<Link>` elements whose href comes from `buildProductsHref(page, search)` — encoded, with `search` omitted when empty.
 9. Bolds the page number (`Page {page}`).
 
 **Edge behavior:** an out-of-range page (e.g. `?page=99`) is *valid* and renders the empty state rather than a 404; a search matching nothing renders the same empty state with pagination hidden (inside the `else` branch).
@@ -193,6 +196,7 @@ Async **Server Component** that receives `searchParams` as a `Promise` (Next 16 
 |---|---|---|
 | `filterProducts` | `(products: Product[], search: string) => Product[]` | Case-insensitive `includes` on `product.name` only, trimming both sides. Does **not** search `category`. |
 | `paginateProducts` | `(products: Product[], page: number) => Product[]` | `offset = (page - 1) * limit`, then `slice(offset, offset + limit)`. Module-level `const limit = 8`. |
+| `buildProductsHref` | `(page: number, search: string) => string` | Builds `/products?page=…&search=…` with `URLSearchParams`, so the search value is percent-encoded and cannot inject extra query params; `search` is omitted when empty. |
 
 Both are pure functions, which is why they're the only unit-tested code. The helpers import the `Product` type from the mock-data module, so data and types are coupled.
 
@@ -226,7 +230,9 @@ onSubmit → preventDefault
 - Form is `noValidate` — **browser validation is deliberately disabled**; the server action is the single source of truth (this is the theme of recent commits: "server action only source of validation").
 - Fields: hidden `productId`; `customerName` (text, `maxLength={50}`); `phone` (`PhoneInput`); `size` (7 radio chips `XS…XXXL`, styled with `peer-checked`); `measurements` (textarea, `maxLength={100}`, 3 rows); `notes` (textarea, `maxLength={100}`, 2 rows).
 - Error UI: red border + `<p className="text-xs text-red-500">` per field; an extra `errors.form` slot renders a banner (currently never populated by the action).
-- Success UI: fixed full-screen overlay (`bg-black/50`), white card, green check icon, message, and a **Close** button that dismisses the modal. Uses `animate-in fade-in duration-200` classes, which are **not defined** (that utility comes from the `tailwindcss-animate` plugin, which is not installed), so no animation occurs.
+- Success modal: fixed full-screen overlay (`bg-black/50`) with `motion-safe:animate-fade-in` (keyframes defined in `globals.css` via a Tailwind v4 `--animate-fade-in` theme token, so it is skipped under `prefers-reduced-motion`), white card, decorative check icon, message, and a **Close** button.
+- Modal accessibility: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`/`aria-describedby`, focus moved to Close on open and restored to the trigger on close, Escape closes it, backdrop click closes it, Tab is trapped on the single focusable control, and page scroll is locked while open.
+- Field accessibility: inputs get `required`, `aria-invalid` and `aria-describedby` pointing at their error paragraph; on a failed submit focus moves to the first invalid field; the size chips are a `<fieldset>`/`<legend>` radio group with visible `peer-focus-visible` rings; decorative `*` markers are `aria-hidden`.
 - `DemandFormErrors` (exported interface) is imported by the server action file for its return type.
 
 **`src/app/actions/demand.ts`** — `"use server"`
@@ -273,14 +279,15 @@ onSubmit → preventDefault
 |---|---|---|
 | `filter-products.test.ts` | Vitest, node | match, multi-match, no-match, empty search, case-insensitivity, whitespace trimming |
 | `paginate-products.test.ts` | Vitest, node | page 1 / page 2 slices, last partial page, out-of-range page, fewer items than a page, empty input |
+| `build-products-href.test.ts` | Vitest, node | empty search omitted, page+search together, encoding of `&`/`#`/`+`, and a crafted `x&page=9` search cannot add parameters |
 
 `vitest.config.ts` only maps `@` → `./src`; there is no `jsdom`/`happy-dom`, so React components and Server Actions are **untested**.
 
 `paginate-products.test.ts` was originally written for **12 items per page** while the implementation uses **8**. The tests were updated to match the 8-per-page rule (pages of 8, last page `13` → ids `97–100`, page `14` → empty). Current result of `npx vitest run`:
 
 ```
-Test Files  2 passed (2)
-     Tests  12 passed (12)
+Test Files  3 passed (3)
+     Tests  18 passed (18)
 ```
 
 ### 4.10 Tooling & workflow
@@ -290,8 +297,8 @@ Test Files  2 passed (2)
 | `npm run dev` | `next dev` (Turbopack) | Starts, prints `Cache Components enabled` / `Partial Prefetching enabled` |
 | `npm run build` | Production build | **Fails** — see findings |
 | `npm run start` | Serve a production build | Requires a successful build |
-| `npm run lint` | `eslint` (whole repo) | 0 errors, 1 warning |
-| `npm run test` | `vitest` (watch mode) | 12/12 passing |
+| `npm run lint` | `eslint` (whole repo) | 0 errors, 0 warnings |
+| `npm run test` | `vitest` (watch mode) | 18/18 passing |
 
 Git history (26 commits) shows the build-up: project init → mock data + URL search/pagination → pure helpers + tests → detail page + back link → demand form (client) → Zod schema → form hardening + error UI → FormData → server action → *server-action-only validation* → success modal/reset.
 
@@ -347,7 +354,9 @@ digest: '3253688162'
 ⨯ Next.js build worker exited with code: 1
 ```
 
-Reproduced on a clean, unmodified tree. It is Next's auto-generated `_global-error` page (not app code) that fails to prerender, so `npm start`/deploy is blocked even though dev mode boots and compiles. Nothing obvious in the app explains it (single deduped React 19.3.0, no duplicate React copies, no `global-error.tsx` override). Worth (a) adding an explicit `src/app/global-error.tsx` client component and (b) checking whether the installed `next@16.4.3` / `react@19.3.0` pair has a known `_global-error` prerender regression; a patch upgrade is the likely fix.
+Reproduced on a clean, unmodified tree at **16.4.3 and again at 16.4.6** after the security upgrade (same digest). It is Next's auto-generated `_global-error` page (not app code) that fails to prerender, so `npm start`/deploy is blocked even though dev mode boots and serves `/products?page=2&search=boots` and `/products/5` with HTTP 200.
+
+Ruled out during the upgrade: duplicate React copies (single deduped 19.3.0), `cacheComponents`/`partialPrefetching` (fails with both disabled), the custom Turbopack CSS rule, `next/font/google`, and `experimental.agentUpgrade`. The patch upgrade did **not** fix it, so it is not a version-specific bug fixed upstream yet. Next steps: add an explicit `src/app/global-error.tsx` client component and, if that does not help, look for an upstream `_global-error` prerender bug on this Next/React pair (or a Windows-only prerender issue).
 
 ### 6.2 Pagination test / implementation drift (resolved)
 
@@ -371,10 +380,10 @@ All three fields now cap typing/pasting at the server limit, so the Zod "cannot 
 
 The form is client-only (`onSubmit`), `noValidate`, with no `action` prop. With JavaScript disabled, the form posts nowhere and errors cannot be shown.
 
-### 6.6 Search links are not URL-encoded and bypass the router
+### 6.6 Search links (resolved)
 
-- Pagination links interpolate the raw `search` string: `` `/products?page=${page + 1}${search ? `&search=${search}` : ""}` ``. A search containing `&`, `#`, `%` or spaces produces a broken/ambiguous URL. `encodeURIComponent` (or `URLSearchParams`) is needed.
-- Links are plain `<a>`, not `next/link`, so every page change is a full document reload — losing client state and skipping prefetching (notably `partialPrefetching` is enabled in config but unused by these links).
+- Pagination hrefs are built by `buildProductsHref` with `URLSearchParams`, so `&`, `#`, `%`, `+` and spaces stay inside the `search` value and cannot inject parameters (covered by tests).
+- Pagination uses `next/link`, so page changes are client navigations with prefetching (`partialPrefetching` in `next.config.ts` is exercised).
 
 ### 6.7 Phone handling is inconsistent
 
@@ -384,14 +393,11 @@ The form is client-only (`onSubmit`), `noValidate`, with no `action` prop. With 
 
 ### 6.8 Minor / cosmetic
 
-- `src/app/products/page.tsx` imports `submitDemand` but never uses it → the only lint warning in the repo (`@typescript-eslint/no-unused-vars`).
 - `src/app/lib/validations/demand-schema.ts` exports `DemandInput`, never imported.
 - `src/app/actions/demand.ts` imports `DemandFormErrors` from a `"use client"` module. It's type-only so it compiles, but types shared by client and server belong in a neutral file (`lib/types.ts`).
 - The error slot `errors.form` is rendered but the action never sets it (no message for infrastructure failures).
 - `src/app/page.tsx` is an empty screen; there is no nav to `/products` anywhere except direct URL.
-- Success modal: no `role="dialog"`, no focus trap, no Escape handler, no backdrop click-to-close; size radios have no `fieldset`/`legend`; error `<p>`s are not linked via `aria-describedby`, and inputs don't set `aria-invalid`.
 - `metadata` still says "Create Next App"; `README.md` is the untouched create-next-app boilerplate.
-- `animate-in fade-in duration-200` on the modal are no-ops (plugin absent).
 - No `loading.tsx`, `error.tsx`, `not-found.tsx`, `sitemap.ts`, `robots.ts`.
 - `notFound()` on the detail page renders the framework default 404 with no route back to the catalog.
 - `filterProducts` matches on `name` only — searching "Boots" works, searching "Footwear" does not.
@@ -406,7 +412,7 @@ The form is client-only (`onSubmit`), `noValidate`, with no `action` prop. With 
 npm install          # deps already present
 npm run dev          # http://localhost:3000  → /products, /products/1 … /products/100
 npm run test         # vitest (watch); use `npx vitest run` for one-shot
-npm run lint         # 0 errors, 1 warning
+npm run lint         # 0 errors, 0 warnings
 npm run build        # ⚠ currently fails at /_global-error prerender
 ```
 
@@ -429,6 +435,6 @@ Manual smoke paths:
 3. ~~Align HTML `maxLength` values with `demandSchema`~~ — done (`customerName` 50, `measurements` 100, `notes` 100).
 4. Add a real persistence layer (e.g. SQLite + Drizzle or Postgres + Prisma) and write the validated demand in `submitDemand`, plus a product-existence check and an admin/inbox route.
 5. Make the demand form progressively enhanced (`<form action={…}>` + `useActionState`) so pending state and no-JS submission work.
-6. Use `next/link` + `URLSearchParams` for search/pagination; extend filtering to category.
+6. ~~Encode `search` in pagination links~~ — done via `buildProductsHref`. Remaining: extend filtering to category.
 7. Replace placeholders: real product image/description fields, home page with navigation, project metadata/README.
-8. Add accessibility polish (fieldset/legend, `aria-invalid`/`aria-describedby`, dialog semantics) and component-level tests with `jsdom`.
+8. ~~Add accessibility polish (`fieldset`/`legend`, `aria-invalid`/`aria-describedby`, dialog semantics, focus handling)~~ — done. Remaining: add component-level tests with `jsdom` (the Vitest config still has no DOM environment), and consider a shared `PAGE_SIZE` constant. (Pagination already uses `next/link`; the remaining gap is URL-encoding the `search` value.)
