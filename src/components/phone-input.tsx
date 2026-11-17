@@ -4,9 +4,19 @@ interface PhoneInputProps {
     name?: string;
     id?: string;
     hasError?: boolean;
+    required?: boolean;
+    describedBy?: string;
+    ref?: React.Ref<HTMLInputElement>;
 }
 
-export function PhoneInput({ name = "phone", id = "phone", hasError = false }: PhoneInputProps) {
+export function PhoneInput({
+    name = "phone",
+    id = "phone",
+    hasError = false,
+    required = false,
+    describedBy,
+    ref,
+}: PhoneInputProps) {
     const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
         const input = e.currentTarget;
         // Strip non-digits
@@ -29,16 +39,23 @@ export function PhoneInput({ name = "phone", id = "phone", hasError = false }: P
                 hasError ? "border-red-500" : "border-neutral-300"
             }`}
         >
-            <span className="inline-flex items-center px-3 text-sm font-medium text-neutral-600 border-r border-neutral-200 select-none">
+            <span
+                aria-hidden="true"
+                className="inline-flex items-center px-3 text-sm font-medium text-neutral-600 border-r border-neutral-200 select-none"
+            >
                 +213
             </span>
             <input
+                ref={ref}
                 id={id}
                 name={name}
                 type="tel"
+                required={required}
                 maxLength={10}
                 onInput={handleInput}
                 placeholder="550 12 34 56"
+                aria-invalid={hasError ? true : undefined}
+                aria-describedby={describedBy}
                 className="w-full px-3 py-2 text-sm placeholder:text-neutral-400 focus:outline-none bg-transparent"
             />
         </div>
