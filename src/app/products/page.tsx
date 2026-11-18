@@ -19,35 +19,26 @@ interface ProductsPageProps {
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
     
   const resolvedParams = await searchParams;
-    // if we encounter multiple search we take the first 
   const rawSearch = Array.isArray(resolvedParams.search)
     ? resolvedParams.search[0]
     : resolvedParams.search;
-    // SAFE SEARCH :if search in undefined we take ""
   const search = rawSearch ? rawSearch.trim().slice(0, 30) : "";
 
 
-    // if we encounter multiple search we take the first 
   const pageParam = Array.isArray(resolvedParams.page)
     ? resolvedParams.page[0]
     : resolvedParams.page;
     
-    // turn into a number
   const rawPage = Number(pageParam);
 
-    // SAFE PAGE : if it is satifiable we take it otherwise default 1
   const isValidPage =
     Number.isFinite(rawPage) && Number.isInteger(rawPage) && rawPage > 0;
   const page = isValidPage ? rawPage : 1;
 
-    // FILTER PRODUCTS : based on search title
   const searchedProducts = filterProducts(mockProducts,search);
   const paginatedProducts = paginateProducts(searchedProducts, page);
 
-    // navigation btn activation conditions
-    // we check next page if it has any elements
     const hasNext  = paginateProducts(searchedProducts,page + 1).length > 0;
-    // we check if we are on page 1 (it has not previous page)
     const hasPrev = page > 1;
 
   return (
@@ -57,7 +48,6 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
       <SearchForm defaultValue={search} />
 
-      {/* if not products match show empty state otherwise the products */}
       {paginatedProducts.length === 0 ? (
         <section className="text-center py-16">
           <h2 className="text-xl font-semibold text-neutral-900">No products found</h2>

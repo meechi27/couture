@@ -32,8 +32,6 @@ export function DemandForm({ productId }: DemandFormProps) {
     const closeButtonRef = useRef<HTMLButtonElement>(null);
     const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
-    // Move focus to the first field that failed validation so screen readers
-    // announce its error message (linked via aria-describedby).
     useEffect(() => {
         const firstInvalid =
             (errors.customerName && customerNameRef.current) ||
@@ -46,8 +44,6 @@ export function DemandForm({ productId }: DemandFormProps) {
         firstInvalid?.focus();
     }, [errors]);
 
-    // Modal behaviour: focus the close button, close on Escape, lock scroll,
-    // and give focus back to the element that opened the dialog.
     useEffect(() => {
         if (!successMessage) return;
 
@@ -109,7 +105,6 @@ export function DemandForm({ productId }: DemandFormProps) {
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
                 <input type="hidden" name="productId" value={productId} />
 
-                {/* Customer Name */}
                 <div className="flex flex-col gap-1.5">
                     <label htmlFor="customerName" className="text-sm font-medium text-neutral-700">
                         Customer Name <span aria-hidden="true" className="text-red-500">*</span>
@@ -135,7 +130,6 @@ export function DemandForm({ productId }: DemandFormProps) {
                     )}
                 </div>
 
-                {/* Phone Number */}
                 <div className="flex flex-col gap-1.5">
                     <label htmlFor="phone" className="text-sm font-medium text-neutral-700">
                         Phone Number <span aria-hidden="true" className="text-red-500">*</span>
@@ -155,7 +149,6 @@ export function DemandForm({ productId }: DemandFormProps) {
                     )}
                 </div>
 
-                {/* Size */}
                 <fieldset className="flex min-w-0 flex-col gap-2">
                     <legend className="p-0 text-sm font-medium text-neutral-700">
                         Size <span aria-hidden="true" className="text-red-500">*</span>
@@ -185,7 +178,6 @@ export function DemandForm({ productId }: DemandFormProps) {
                     )}
                 </fieldset>
 
-                {/* Measurements */}
                 <div className="flex flex-col gap-1.5">
                     <label htmlFor="measurements" className="text-sm font-medium text-neutral-700">
                         Measurements / Customization Details
@@ -210,7 +202,6 @@ export function DemandForm({ productId }: DemandFormProps) {
                     )}
                 </div>
 
-                {/* Notes */}
                 <div className="flex flex-col gap-1.5">
                     <label htmlFor="notes" className="text-sm font-medium text-neutral-700">
                         Additional Notes
@@ -238,7 +229,6 @@ export function DemandForm({ productId }: DemandFormProps) {
                 <SubmitDemandButton />
             </form>
 
-            {/* Success Modal / Popup */}
             {successMessage && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 motion-safe:animate-fade-in"
@@ -254,7 +244,6 @@ export function DemandForm({ productId }: DemandFormProps) {
                         aria-labelledby="demand-success-title"
                         aria-describedby="demand-success-message"
                         onKeyDown={(event) => {
-                            // Single focusable control: keep Tab inside the dialog.
                             if (event.key === "Tab") {
                                 event.preventDefault();
                                 closeButtonRef.current?.focus();

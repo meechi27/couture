@@ -19,10 +19,8 @@ export function PhoneInput({
 }: PhoneInputProps) {
     const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
         const input = e.currentTarget;
-        // Strip non-digits
         let val = input.value.replace(/\D/g, "");
 
-        // If it starts with 0: allow up to 10 digits; otherwise allow up to 9 digits
         if (val.length > 0) {
             const max = val[0] === "0" ? 10 : 9;
             if (val.length > max) {

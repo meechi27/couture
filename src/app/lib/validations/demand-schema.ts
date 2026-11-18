@@ -25,9 +25,7 @@ export const demandSchema = z.object({
   phone: z
     .string({ message: "Phone number is required." })
     .trim()
-    // Strips non-digits
     .transform((val) => val.replace(/\D/g, ""))
-    // Algerian format: 10 digits starting with 0, or 9 digits starting with 1-9
     .refine(
       (val) => /^(0[0-9]{9}|[1-9][0-9]{8})$/.test(val),
       "Invalid Algerian phone number format (9 digits, or 10 digits starting with 0)."
