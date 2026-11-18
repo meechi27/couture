@@ -15,7 +15,6 @@ export interface DemandFormErrors {
     size?: string;
     measurements?: string;
     notes?: string;
-    form?: string;
 }
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const;
@@ -92,15 +91,6 @@ export function DemandForm({ productId }: DemandFormProps) {
             <h2 className="text-xl font-bold tracking-tight text-neutral-900 mb-6">
                 Submit a Demand
             </h2>
-
-            {errors.form && (
-                <div
-                    role="alert"
-                    className="mb-4 rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200"
-                >
-                    {errors.form}
-                </div>
-            )}
 
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
                 <input type="hidden" name="productId" value={productId} />

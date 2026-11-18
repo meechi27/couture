@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const DEMAND_SIZES = [
+const DEMAND_SIZES = [
   "XS",
   "S",
   "M",
@@ -49,5 +49,3 @@ export const demandSchema = z.object({
     .optional()
     .or(z.literal("")),
 });
-
-export type DemandInput = z.infer<typeof demandSchema>;
