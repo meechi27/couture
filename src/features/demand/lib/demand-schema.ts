@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEMAND_SIZES } from "@/features/demand/demand-sizes";
+import { DEMAND_SIZES } from "@/features/demand/lib/demand-sizes";
 
 export const demandSchema = z.object({
   productId: z

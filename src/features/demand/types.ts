@@ -1,4 +1,4 @@
-import type { DemandFormField, DemandInput } from "@/features/demand/demand-schema";
+import type { DemandFormField, DemandInput } from "@/features/demand/lib/demand-schema";
 
 export type DemandFormErrors = Partial<Record<DemandFormField, string>>;
 
