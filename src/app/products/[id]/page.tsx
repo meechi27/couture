@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { mockProducts } from "../mock-products";
+import { mockProducts } from "@/features/products/mock-products";
 import { notFound } from "next/navigation";
-import { DemandForm } from "@/components/demand-form";
+import { DemandForm } from "@/features/demand/demand-form";
 
 interface ProductDetailsProps {
     params: Promise<{ id: string }>;

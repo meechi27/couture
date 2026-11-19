@@ -1,10 +1,10 @@
 
 import Link from "next/link";
-import { mockProducts } from "./mock-products";
-import { filterProducts } from "../lib/products/filter-products";
-import { paginateProducts } from "../lib/products/paginate-products";
-import { buildProductsHref } from "../lib/products/build-products-href";
-import { SearchForm } from "@/components/search-form";
+import { mockProducts } from "@/features/products/mock-products";
+import { filterProducts } from "@/features/products/filter-products";
+import { paginateProducts } from "@/features/products/paginate-products";
+import { buildProductsHref } from "@/features/products/build-products-href";
+import { SearchForm } from "@/features/products/search-form";
 
 
 

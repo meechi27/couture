@@ -1,20 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { PhoneInput } from "@/components/phone-input";
-import { SubmitDemandButton } from "@/components/submit-demand-button";
-import { submitDemand } from "@/app/actions/demand";
+import type { DemandFormErrors } from "@/features/demand/types";
+import { PhoneInput } from "@/features/demand/phone-input";
+import { SubmitDemandButton } from "@/features/demand/submit-demand-button";
+import { submitDemand } from "@/features/demand/submit-demand";
 
 interface DemandFormProps {
     productId: string;
-}
-
-export interface DemandFormErrors {
-    customerName?: string;
-    phone?: string;
-    size?: string;
-    measurements?: string;
-    notes?: string;
 }
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const;

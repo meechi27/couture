@@ -1,10 +1,6 @@
 "use server"
-import { DemandFormErrors } from "@/components/demand-form";
-import { demandSchema } from "../lib/validations/demand-schema";
-
-type DemandActionResult =
-    | { success: true; message: string }
-    | { success: false; errors: DemandFormErrors };
+import type { DemandActionResult } from "@/features/demand/types";
+import { demandSchema } from "@/features/demand/demand-schema";
 
 
 

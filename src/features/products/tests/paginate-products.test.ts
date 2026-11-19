@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { paginateProducts } from "../paginate-products";
-import { mockProducts } from "@/app/products/mock-products";
+import { paginateProducts } from "@/features/products/paginate-products";
+import { mockProducts } from "@/features/products/mock-products";
 
 describe("paginateProducts", () => {
   it("returns the first 8 products on page 1", () => {

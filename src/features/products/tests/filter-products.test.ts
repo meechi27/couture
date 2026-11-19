@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { filterProducts } from "../filter-products";
+import { filterProducts } from "@/features/products/filter-products";
 
 const products = [
   { id: "1", name: "Gold Kaftan", category: "Kaftan", price: 150 },

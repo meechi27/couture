@@ -1,4 +1,4 @@
-import { Product } from "@/app/products/mock-products";
+import { Product } from "@/features/products/mock-products";
 
 const limit = 8
 
