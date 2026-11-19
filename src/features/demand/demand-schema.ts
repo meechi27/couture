@@ -1,14 +1,5 @@
 import { z } from "zod";
-
-const DEMAND_SIZES = [
-  "XS",
-  "S",
-  "M",
-  "L",
-  "XL",
-  "XXL",
-  "XXXL",
-] as const;
+import { DEMAND_SIZES } from "@/features/demand/demand-sizes";
 
 export const demandSchema = z.object({
   productId: z

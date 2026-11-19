@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { DemandFormErrors } from "@/features/demand/types";
+import { DEMAND_SIZES } from "@/features/demand/demand-sizes";
 import { PhoneInput } from "@/features/demand/phone-input";
 import { SubmitDemandButton } from "@/features/demand/submit-demand-button";
 import { submitDemand } from "@/features/demand/submit-demand";
@@ -9,8 +10,6 @@ import { submitDemand } from "@/features/demand/submit-demand";
 interface DemandFormProps {
     productId: string;
 }
-
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const;
 
 export function DemandForm({ productId }: DemandFormProps) {
     const [errors, setErrors] = useState<DemandFormErrors>({});
@@ -137,7 +136,7 @@ export function DemandForm({ productId }: DemandFormProps) {
                         Size <span aria-hidden="true" className="text-red-500">*</span>
                     </legend>
                     <div className="flex flex-wrap gap-2">
-                        {SIZES.map((size, index) => (
+                        {DEMAND_SIZES.map((size, index) => (
                             <label key={size} className="cursor-pointer">
                                 <input
                                     ref={index === 0 ? sizeRef : undefined}
