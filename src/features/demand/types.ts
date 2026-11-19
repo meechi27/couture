@@ -1,11 +1,7 @@
-export interface DemandFormErrors {
-    customerName?: string;
-    phone?: string;
-    size?: string;
-    measurements?: string;
-    notes?: string;
-}
+import type { DemandFormField, DemandInput } from "@/features/demand/demand-schema";
+
+export type DemandFormErrors = Partial<Record<DemandFormField, string>>;
 
 export type DemandActionResult =
-    | { success: true; message: string }
+    | { success: true; message: string; data: DemandInput }
     | { success: false; errors: DemandFormErrors };

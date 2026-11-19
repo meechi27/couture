@@ -40,3 +40,7 @@ export const demandSchema = z.object({
     .optional()
     .or(z.literal("")),
 });
+
+export type DemandInput = z.infer<typeof demandSchema>;
+
+export type DemandFormField = Exclude<keyof DemandInput, "productId">;

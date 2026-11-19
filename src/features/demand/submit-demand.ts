@@ -1,12 +1,11 @@
-"use server"
-import type { DemandActionResult } from "@/features/demand/types";
+"use server";
+
+import type { DemandActionResult, DemandFormErrors } from "@/features/demand/types";
 import { demandSchema } from "@/features/demand/demand-schema";
 
-
+type DemandSchemaField = keyof typeof demandSchema.shape;
 
 export async function submitDemand(formData: FormData): Promise<DemandActionResult> {
-
-
     const rawData = {
         productId: formData.get("productId"),
         customerName: formData.get("customerName"),
@@ -18,27 +17,21 @@ export async function submitDemand(formData: FormData): Promise<DemandActionResu
 
     const result = demandSchema.safeParse(rawData);
 
-
     if (!result.success) {
-        
-        const fieldErrors = result.error.flatten().fieldErrors
+        const fieldErrors = result.error.flatten().fieldErrors;
 
-        return {
-            success: false,
-            errors: {
-                customerName: fieldErrors.customerName?.[0],
-                phone: fieldErrors.phone?.[0],
-                size: fieldErrors.size?.[0],
-                measurements: fieldErrors.measurements?.[0],
-                notes: fieldErrors.notes?.[0],
-            },
-        };
+        const errors: DemandFormErrors = {};
+        for (const field of Object.keys(demandSchema.shape) as DemandSchemaField[]) {
+            if (field === "productId") continue;
+            errors[field] = fieldErrors[field]?.[0];
+        }
+
+        return { success: false, errors };
     }
+
     return {
         success: true,
         message: "Your demand information passed validation.",
+        data: result.data,
     };
-
-
-
 }
