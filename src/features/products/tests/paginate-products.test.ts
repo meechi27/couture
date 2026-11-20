@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { paginateProducts } from "@/features/products/paginate-products";
+import { paginateProducts } from "@/features/products/lib/paginate-products";
 import { mockProducts } from "@/features/products/mock-products";
 
 describe("paginateProducts", () => {

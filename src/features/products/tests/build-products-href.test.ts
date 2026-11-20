@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildProductsHref } from "@/features/products/build-products-href";
+import { buildProductsHref } from "@/features/products/lib/build-products-href";
 
 function queryOf(href: string): URLSearchParams {
   return new URLSearchParams(href.slice(href.indexOf("?") + 1));
