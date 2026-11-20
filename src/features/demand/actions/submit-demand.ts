@@ -1,6 +1,7 @@
 "use server";
 
-import type { DemandActionResult, DemandFormErrors } from "@/features/demand/types";
+import type { DemandActionResult } from "@/features/demand/demand-action.types";
+import type { DemandFormErrors } from "@/features/demand/demand-form.types";
 import { demandSchema } from "@/features/demand/lib/demand-schema";
 
 type DemandSchemaField = keyof typeof demandSchema.shape;

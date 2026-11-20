@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { DemandFormErrors } from "@/features/demand/types";
+import type { DemandFormErrors } from "@/features/demand/demand-form.types";
 import { DEMAND_SIZES } from "@/features/demand/lib/demand-sizes";
 import { PhoneInput } from "@/features/demand/ui/phone-input";
 import { SubmitDemandButton } from "@/features/demand/ui/submit-demand-button";
